@@ -47,7 +47,7 @@ end
 # Create the Confluence database user.
 postgresql_database_user node['confluence']['database_user'] do
   connection(
-    :host      => node['confluence']['database_password'],
+    :host      => node['confluence']['database_host'],
     :port      => node['confluence']['database_port'], 
     :username  => node['confluence']['database_superuser'],
     :password  => node['confluence']['database_superuser_password']
@@ -60,7 +60,7 @@ end
 # Create the Confluence database.
 postgresql_database node['confluence']['database_name'] do
   connection(
-    :host      => node['confluence']['database_password'],
+    :host      => node['confluence']['database_host'],
     :port      => node['confluence']['database_port'],
     :username  => node['confluence']['database_superuser'],
     :password  => node['confluence']['database_superuser_password']

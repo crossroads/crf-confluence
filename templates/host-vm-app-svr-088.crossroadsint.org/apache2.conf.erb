@@ -1,0 +1,55 @@
+<VirtualHost <%= @node['confluence']['bind_address'] %>:80>
+
+  ServerName  <%= @node['confluence']['domainname'] %>
+  ServerAlias <%= @node['confluence']['hostname'] %>
+
+  RewriteEngine On
+
+  RewriteRule /(.*) https://<%= @node['confluence']['domainname'] %>/$1 [R=permanent,NE]
+
+</VirtualHost>
+
+<VirtualHost <%= @node['confluence']['bind_address'] %>:443>
+
+  ServerName  <%= @node['confluence']['domainname'] %>
+  ServerAlias <%= @node['confluence']['hostname'] %>
+
+  SSLEngine On
+
+  SSLCertificateFile      /etc/pki/tls/certs/<%= @node['confluence']['certificate']['cert_file'] %>
+  SSLCertificateKeyFile   /etc/pki/tls/private/<%= @node['confluence']['certificate']['key_file'] %>
+  SSLCertificateChainFile /etc/pki/tls/certs/<%= @node['confluence']['certificate']['chain_file'] %>
+
+  ProxyRequests Off
+  <Proxy *>
+    Require all granted
+  </Proxy>
+
+  # HelpIt Rails stuff
+
+  DocumentRoot /opt/rails/public
+
+  <Directory "/opt/rails/public">
+    Options FollowSymLinks
+    AllowOverride None
+    Require all granted
+    Options -MultiViews
+    Require ip 10.0.0.0/8
+  </Directory>
+
+  RailsBaseURI /helpit
+  RailsBaseURI /claimit
+
+  RewriteRule ^/helpit          - [L]
+  RewriteRule ^/claimit         - [L]
+  RewriteRule ^/comms_helpdesk/ https://<%= @node['confluence']['domainname'] %>/helpit/communications       [R]
+  RewriteRule ^/maintenance/    https://<%= @node['confluence']['domainname'] %>/helpit/maintenance_helpdesk [R]
+
+  ProxyPass        /helpit         !
+  ProxyPass        /claimit        !
+  ProxyPass        /comms_helpdesk !
+  ProxyPass        /maintenance    !
+  ProxyPass        / http://localhost:<%= @node['confluence']['bind_http_port'] %>/
+  ProxyPassReverse / http://localhost:<%= @node['confluence']['bind_http_port'] %>/
+
+</VirtualHost>

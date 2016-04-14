@@ -169,7 +169,7 @@ template "#{node['apache']['dir']}/sites-available/confluence.conf" do
   group  node['apache']['user']
   mode   '0640'
   backup false
-  notifies :restart, 'service[confluence]'
+  notifies :restart, 'service[apache2]'
 end
 
 template "#{node['confluence']['install_path']}/current/conf/server.xml" do

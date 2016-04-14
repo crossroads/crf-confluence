@@ -34,8 +34,11 @@
     AllowOverride None
     Require all granted
     Options -MultiViews
-    Require ip 10.0.0.0/8
   </Directory>
+
+  <Location /helpit>
+    Require ip 10.
+  </Location>
 
   RailsBaseURI /helpit
   RailsBaseURI /claimit
